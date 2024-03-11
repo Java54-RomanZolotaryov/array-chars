@@ -1,22 +1,44 @@
 package telran.arrays;
 
+import java.util.Arrays;
+
 public class ArrayChar {
+	
 	private char[] array;
 	
 	public ArrayChar(char[] array) {
-		this.array = array;
+		this.array = Arrays.copyOf(array, array.length);
 	}
 	
 	public int compareTo(ArrayChar other) {
+		return compareCommon(other, false);
+	}
+	
+	public int compareToIgnoreCase(ArrayChar other) {
+		return compareCommon(other, true);
+	}
+	
+	private int compareCommon(ArrayChar other, boolean ignoreCase) {
 		int length = Math.min(this.array.length, other.array.length);
 		int index = 0;
-		while(index < length && this.array[index] == other.array[index]) {
+		int diffValue = 0;
+		while(index < length && (diffValue = diff(other, index, ignoreCase)) == 0) {
 			index++;
 		}
 		return index == length ? this.array.length - other.array.length :
-			this.array[index] - other.array[index];
+			diffValue;
 	}
-	
+
+	private int diff(ArrayChar other, int index, boolean ignoreCase) {
+		char originValue = array[index];
+		char otherValue = other.array[index];
+		if (ignoreCase) {
+			originValue = Character.toLowerCase(originValue);
+			otherValue = Character.toLowerCase(otherValue);
+		}
+		return originValue - otherValue;
+	}
+
 	public int indexOf(char character) {
 		int index = 0;
 		while(index < array.length && array[index] != character) {
@@ -42,29 +64,16 @@ public class ArrayChar {
 		}
 		return count;
 	}
-	
-	public int compareToIgnoreCase(ArrayChar other) {
-		int length = Math.min(this.array.length, other.array.length);
-		int index = 0;
 		
-		//We use bitwise operator '^(XOR)' to compare characters with case ignored
-		//However only works in scope of ASCII Table codes
-		while(index < length && (this.array[index] == other.array[index] || this.array[index] == (other.array[index] ^ 32))) {
-			index++;
-		}
-		return index == length ? this.array.length - other.array.length :
-			this.array[index] - other.array[index];
-	}
-	
 	public boolean contains(char character) {
-		return indexOf(character) != -1;
+		return indexOf(character) > -1;
 	}
 	
 	public boolean equals(ArrayChar other) {
-		return compareTo(other) == 0;
+		return other != null && compareTo(other) == 0;
 	}
 	
 	public boolean equalsIgnoreCase(ArrayChar other) {
-		return compareToIgnoreCase(other) == 0;
+		return other != null && compareToIgnoreCase(other) == 0;
 	}	
 }
